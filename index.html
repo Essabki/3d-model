@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>3D Showroom</title>
+
+<style>
+
+/* ========================= */
+/* RESET */
+/* ========================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    background:#f5f5f5;
+    overflow-x:hidden;
+}
+
+/* ========================= */
+/* HEADER */
+/* ========================= */
+
+header{
+    width:100%;
+    height:80px;
+    background:white;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 50px;
+    border-bottom:1px solid #ddd;
+}
+
+header ul{
+    display:flex;
+    gap:30px;
+    list-style:none;
+}
+
+/* ========================= */
+/* SHARED SCENE SYSTEM */
+/* ========================= */
+
+.scene{
+    width:100%;
+    height:100vh;
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+/* slider */
+.slider{
+    display:flex;
+    width:100%;
+    height:100%;
+    transition:transform 0.5s ease;
+}
+
+/* slide */
+.slide{
+    min-width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px;
+    gap:40px;
+}
+
+/* 3D view */
+.act{
+    width:60%;
+    height:100%;
+}
+
+/* description */
+.description{
+    width:40%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:15px;
+    padding:30px;
+    background:white;
+    border-radius:12px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* iframe */
+iframe{
+    width:100%;
+    height:100%;
+    border:none;
+    background:#ddd;
+    border-radius:12px;
+}
+
+/* ========================= */
+/* ARROWS */
+/* ========================= */
+
+.arrow{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    font-size:30px;
+    background:white;
+    border:none;
+    cursor:pointer;
+    padding:10px 15px;
+    z-index:10;
+}
+
+.left{ left:10px; border-radius: 20%;}
+.right{ right:10px;border-radius: 20%; }
+a{text-decoration: none; color: black;}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Design</h1>
+    <ul>
+       <a href="#home"> <li>Home</li></a>
+       <a href="#design"><li>Design</li></a>
+        <li>About</li>
+        <li>Us</li>
+    </ul>
+</header>
+
+<!-- ================= SCENE ================= -->
+
+<section class="scene" id="home">
+
+    <button class="arrow left" onclick="move('sceneSlider', -1)">❮</button>
+    <button class="arrow right" onclick="move('sceneSlider', 1)">❯</button>
+
+    <div class="slider" id="sceneSlider">
+
+        <div class="slide">
+            <div class="act">
+                <iframe src="https://essabki.github.io/3D_Kitchen/"></iframe>
+            </div>
+            <div class="description">
+                <h1>Kitchen</h1>
+                <p>Interactive 3D kitchen built with Three.js, oven, skin table,Refrigerator ,Cooking Table </p>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="act">
+                <iframe src="https://essabki.github.io/3D_room/"></iframe>
+            </div>
+            <div class="description">
+                <h1>Room</h1>
+                <p>Interactive 3D room, wardrobe , desk ,nightstand bed(glb)</p>
+            </div>
+        </div>
+
+
+        <div class="slide">
+            <div class="act">
+                <iframe src="https://essabki.github.io/store/"></iframe>
+            </div>
+            <div class="description">
+                <h1>store</h1>
+                <p>Interactive 3D cola store , </p>
+            </div>
+        </div>
+
+
+
+
+    </div>
+
+</section>
+
+<!-- ================= FURNITURE ================= -->
+<h1 style="padding-left: 35px;">Furniture section</h1>
+
+<section class="scene" id="design">
+    <button class="arrow left" onclick="move('furnitureSlider', -1)">❮</button>
+    <button class="arrow right" onclick="move('furnitureSlider', 1)">❯</button>
+
+    <div class="slider" id="furnitureSlider">
+
+        <div class="slide">
+            <div class="act">
+                <iframe src="https://essabki.github.io/Three.js_wardrobe/"></iframe>
+            </div>
+            <div class="description">
+                <h1>Wardrobe </h1>
+                <p>3D furniture model two doors and two big drawers</p>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="act">
+                <iframe src="https://essabki.github.io/Three.js_wardrobe.II/"></iframe>
+            </div>
+            <div class="description">
+                <h1>Wardrobe 2</h1>
+                <p>3D furniture model three doors two small drawers</p>
+            </div>
+        </div>
+
+
+
+
+        <div class="slide">
+            <div class="act">
+                <iframe src="https://essabki.github.io/3D_fitted_wardrobe_three.js/"></iframe>
+            </div>
+            <div class="description">
+                <h1>fitted wardrobe</h1>
+                <p>3D furniture model ,wall-mounted wardrobe,with shoe cabinet</p>
+            </div>
+        </div>
+        <div class="slide">
+            <div class="act">
+                <iframe src="https://essabki.github.io/desk/"></iframe>
+            </div>
+            <div class="description">
+                <h1>Desk</h1>
+                <p>Interactive 3D desk , table with three drawers</p>
+            </div>
+        </div>
+
+            <div class="slide">
+            <div class="act">
+                <iframe src="https://essabki.github.io/nightsatnd/"></iframe>
+            </div>
+            <div class="description">
+                <h1>NightStand</h1>
+                <p>3D model with 2 drawer </p>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<script>
+
+/* =========================
+   UNIVERSAL SLIDER ENGINE
+========================= */
+
+const state = {};
+
+function move(sliderId, dir){
+    const slider = document.getElementById(sliderId);
+    const total = slider.children.length;
+
+    if(state[sliderId] === undefined){
+        state[sliderId] = 0;
+    }
+
+    state[sliderId] += dir;
+
+    if(state[sliderId] < 0){
+        state[sliderId] = 0;
+    }
+
+    if(state[sliderId] > total - 1){
+        state[sliderId] = total - 1;
+    }
+
+    slider.style.transform =
+        `translateX(-${state[sliderId] * 100}%)`;
+}
+
+</script>
+
+</body>
+</html>
