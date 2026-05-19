@@ -1,286 +1,1055 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>3D Showroom</title>
-
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 
 /* ========================= */
-/* RESET */
+/* VARIABLES & RESET */
 /* ========================= */
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, sans-serif;
+:root {
+  --bg:       #0a0a0c;
+  --surface:  #13131a;
+  --card:     #1c1c26;
+  --border:   #2a2a3a;
+  --accent:   #7c6ef5;
+  --accent2:  #f5a26e;
+  --text:     #e8e8f0;
+  --muted:    #6e6e88;
+  --radius:   16px;
+  --header-h: 70px;
+  --ease:     cubic-bezier(.4,0,.2,1);
 }
 
-body{
-    background:#f5f5f5;
-    overflow-x:hidden;
+*, *::before, *::after {
+  margin: 0; padding: 0;
+  box-sizing: border-box;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+a { text-decoration: none; color: inherit; }
+
+/* ========================= */
+/* BACKGROUND DECORATION */
+/* ========================= */
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 70% 20%, rgba(124,110,245,.12) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 50% at 20% 80%, rgba(245,162,110,.08) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* ========================= */
 /* HEADER */
 /* ========================= */
 
-header{
-    width:100%;
-    height:80px;
-    background:white;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:0 50px;
-    border-bottom:1px solid #ddd;
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--header-h);
+  background: rgba(10,10,12,.82);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 5%;
 }
 
-header ul{
-    display:flex;
-    gap:30px;
-    list-style:none;
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.7rem;
+  letter-spacing: .12em;
+  background: linear-gradient(120deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-/* ========================= */
-/* SHARED SCENE SYSTEM */
-/* ========================= */
-
-.scene{
-    width:100%;
-    height:100vh;
-    position:relative;
-    overflow:hidden;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+nav {
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
-/* slider */
-.slider{
-    display:flex;
-    width:100%;
-    height:100%;
-    transition:transform 0.5s ease;
+nav a {
+  padding: 7px 18px;
+  border-radius: 99px;
+  font-size: .875rem;
+  font-weight: 500;
+  color: var(--muted);
+  transition: color .2s var(--ease), background .2s var(--ease);
 }
 
-/* slide */
-.slide{
-    min-width:100%;
-    height:100%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:40px;
-    gap:40px;
+nav a:hover, nav a.active {
+  color: var(--text);
+  background: var(--card);
 }
 
-/* 3D view */
-.act{
-    width:60%;
-    height:100%;
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 6px;
 }
 
-/* description */
-.description{
-    width:40%;
-    height:100%;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    gap:15px;
-    padding:30px;
-    background:white;
-    border-radius:12px;
-    box-shadow:0 5px 15px rgba(0,0,0,0.2);
-}
-
-/* iframe */
-iframe{
-    width:100%;
-    height:100%;
-    border:none;
-    background:#ddd;
-    border-radius:12px;
+.hamburger span {
+  width: 24px; height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: transform .3s var(--ease), opacity .3s;
 }
 
 /* ========================= */
-/* ARROWS */
+/* HERO */
 /* ========================= */
 
-.arrow{
-    position:absolute;
-    top:50%;
-    transform:translateY(-50%);
-    font-size:30px;
-    background:white;
-    border:none;
-    cursor:pointer;
-    padding:10px 15px;
-    z-index:10;
+.hero {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 90px 5% 60px;
 }
 
-.left{ left:10px; border-radius: 20%;}
-.right{ right:10px;border-radius: 20%; }
-a{text-decoration: none; color: black;}
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(124,110,245,.12);
+  border: 1px solid rgba(124,110,245,.3);
+  border-radius: 99px;
+  padding: 5px 16px;
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 22px;
+}
+
+.hero-eyebrow::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: .4; transform: scale(1.5); }
+}
+
+.hero h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3.2rem, 9vw, 8rem);
+  line-height: .95;
+  letter-spacing: .04em;
+}
+
+.hero h1 em {
+  font-style: normal;
+  background: linear-gradient(120deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero p {
+  margin-top: 20px;
+  color: var(--muted);
+  font-size: 1.05rem;
+  max-width: 480px;
+  margin-inline: auto;
+  line-height: 1.65;
+}
+
+/* ========================= */
+/* FILTER BAR */
+/* ========================= */
+
+.filter-bar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 0 5% 50px;
+}
+
+.filter-btn {
+  padding: 8px 22px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: .85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .22s var(--ease);
+}
+
+.filter-btn:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.filter-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* ========================= */
+/* GRID */
+/* ========================= */
+
+.grid-section {
+  position: relative;
+  z-index: 1;
+  padding: 0 5% 100px;
+}
+
+.section-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: .12em;
+  color: var(--muted);
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+/* ========================= */
+/* CARDS */
+/* ========================= */
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform .3s var(--ease), border-color .3s var(--ease), box-shadow .3s var(--ease);
+  display: flex;
+  flex-direction: column;
+  animation: fadeUp .5s var(--ease) both;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  border-color: var(--accent);
+  box-shadow: 0 20px 50px rgba(124,110,245,.18);
+}
+
+.card.hidden { display: none; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* thumbnail */
+.card-thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/10;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.card-thumb iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  pointer-events: none;
+  transform: scale(1.02);
+  transition: transform .4s var(--ease);
+}
+
+.card:hover .card-thumb iframe {
+  transform: scale(1.05);
+}
+
+/* overlay */
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, rgba(10,10,12,.85) 100%);
+  display: flex;
+  align-items: flex-end;
+  padding: 16px;
+  opacity: 0;
+  transition: opacity .3s var(--ease);
+}
+
+.card:hover .card-overlay { opacity: 1; }
+
+.btn-view {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--accent);
+  color: #fff;
+  padding: 9px 20px;
+  border-radius: 99px;
+  font-size: .82rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: background .2s;
+}
+
+.btn-view:hover { background: #6458d6; }
+
+.btn-view svg {
+  width: 14px; height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* tag */
+.card-tag {
+  position: absolute;
+  top: 12px; right: 12px;
+  background: rgba(10,10,12,.7);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--border);
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--accent2);
+}
+
+/* body */
+.card-body {
+  padding: 20px 22px 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: .06em;
+}
+
+.card-desc {
+  color: var(--muted);
+  font-size: .875rem;
+  line-height: 1.6;
+  flex: 1;
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.card-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  background: rgba(124,110,245,.12);
+  color: var(--accent);
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: .72rem;
+  font-weight: 600;
+}
+
+.card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--accent);
+  transition: gap .2s;
+}
+.card-link:hover { gap: 9px; }
+
+/* ========================= */
+/* LIGHTBOX */
+/* ========================= */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0,0,0,.92);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s var(--ease);
+}
+
+.lightbox.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.lb-inner {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  gap: 32px;
+  align-items: stretch;
+  transform: translateY(20px);
+  transition: transform .3s var(--ease);
+}
+
+.lightbox.open .lb-inner { transform: translateY(0); }
+
+.lb-frame {
+  flex: 1;
+  min-height: 520px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.lb-frame iframe {
+  width: 100%; height: 100%;
+  border: none;
+}
+
+.lb-info {
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+}
+
+.lb-tag {
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--accent2);
+}
+
+.lb-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.2rem;
+  letter-spacing: .06em;
+  line-height: 1;
+}
+
+.lb-desc {
+  color: var(--muted);
+  font-size: .9rem;
+  line-height: 1.65;
+  flex: 1;
+}
+
+.lb-chips { display: flex; gap: 7px; flex-wrap: wrap; }
+
+.lb-open-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--accent);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 99px;
+  font-size: .85rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background .2s;
+  text-align: center;
+}
+
+.lb-open-btn:hover { background: #6458d6; }
+
+.lb-close {
+  position: absolute;
+  top: 20px; right: 24px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .2s;
+}
+
+.lb-close:hover { background: var(--border); }
+
+/* ========================= */
+/* FOOTER */
+/* ========================= */
+
+footer {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--border);
+  padding: 40px 5%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+footer .logo { font-size: 1.2rem; }
+
+footer p {
+  color: var(--muted);
+  font-size: .8rem;
+}
+
+/* ========================= */
+/* MOBILE NAV DRAWER */
+/* ========================= */
+
+.nav-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  background: rgba(0,0,0,.6);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s;
+}
+
+.nav-drawer.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.nav-drawer-inner {
+  position: absolute;
+  top: 0; right: 0;
+  width: 260px; height: 100%;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  padding: 80px 32px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transform: translateX(100%);
+  transition: transform .35s var(--ease);
+}
+
+.nav-drawer.open .nav-drawer-inner {
+  transform: translateX(0);
+}
+
+.nav-drawer-inner a {
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--muted);
+  transition: color .2s, background .2s;
+}
+
+.nav-drawer-inner a:hover {
+  color: var(--text);
+  background: var(--card);
+}
+
+/* ========================= */
+/* RESPONSIVE */
+/* ========================= */
+
+@media (max-width: 900px) {
+  nav { display: none; }
+  .hamburger { display: flex; }
+  .lb-inner { flex-direction: column; }
+  .lb-info { width: 100%; min-height: auto; }
+  .lb-frame { min-height: 55vw; }
+}
+
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .hero { padding: 60px 5% 40px; }
+}
+
 </style>
 </head>
-
 <body>
 
+<!-- ========================= -->
+<!-- HEADER -->
+<!-- ========================= -->
+
 <header>
-    <h1>Design</h1>
-    <ul>
-       <a href="#home"> <li>Home</li></a>
-       <a href="#design"><li>Design</li></a>
-        <li>About</li>
-        <li>Us</li>
-    </ul>
+  <span class="logo">SHOWROOM 3D</span>
+  <nav id="desktopNav">
+    <a href="#hero" class="active">Home</a>
+    <a href="#scenes">Scenes</a>
+    <a href="#furniture">Furniture</a>
+  </nav>
+  <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </header>
 
-<!-- ================= SCENE ================= -->
+<!-- MOBILE DRAWER -->
+<div class="nav-drawer" id="navDrawer">
+  <div class="nav-drawer-inner">
+    <a href="#hero"      onclick="closeDrawer()">Home</a>
+    <a href="#scenes"    onclick="closeDrawer()">Scenes</a>
+    <a href="#furniture" onclick="closeDrawer()">Furniture</a>
+  </div>
+</div>
 
-<section class="scene" id="home">
+<!-- ========================= -->
+<!-- HERO -->
+<!-- ========================= -->
 
-    <button class="arrow left" onclick="move('sceneSlider', -1)">❮</button>
-    <button class="arrow right" onclick="move('sceneSlider', 1)">❯</button>
-
-    <div class="slider" id="sceneSlider">
-
-        <div class="slide">
-            <div class="act">
-                <iframe src="https://essabki.github.io/3D_Kitchen/"></iframe>
-            </div>
-            <div class="description">
-                <h1>Kitchen</h1>
-                <p>Interactive 3D kitchen built with Three.js, oven, skin table,Refrigerator ,Cooking Table </p>
-            </div>
-        </div>
-
-        <div class="slide">
-            <div class="act">
-                <iframe src="https://essabki.github.io/3D_room/"></iframe>
-            </div>
-            <div class="description">
-                <h1>Room</h1>
-                <p>Interactive 3D room, wardrobe , desk ,nightstand bed(glb)</p>
-            </div>
-        </div>
-
-
-        <div class="slide">
-            <div class="act">
-                <iframe src="https://essabki.github.io/store/"></iframe>
-            </div>
-            <div class="description">
-                <h1>store</h1>
-                <p>Interactive 3D cola store , </p>
-            </div>
-        </div>
-
-
-
-
-    </div>
-
+<section id="hero" class="hero">
+  <div class="hero-eyebrow">Interactive 3D</div>
+  <h1>3D <em>Design</em><br>Showroom</h1>
+  <p>Explore fully interactive Three.js environments — from complete rooms to individual furniture pieces.</p>
 </section>
 
-<!-- ================= FURNITURE ================= -->
-<h1 style="padding-left: 35px;">Furniture section</h1>
+<!-- ========================= -->
+<!-- FILTER BAR -->
+<!-- ========================= -->
 
-<section class="scene" id="design">
-    <button class="arrow left" onclick="move('furnitureSlider', -1)">❮</button>
-    <button class="arrow right" onclick="move('furnitureSlider', 1)">❯</button>
+<div class="filter-bar">
+  <button class="filter-btn active" data-filter="all">All</button>
+  <button class="filter-btn" data-filter="scene">Scenes</button>
+  <button class="filter-btn" data-filter="furniture">Furniture</button>
+  <button class="filter-btn" data-filter="wardrobe">Wardrobes</button>
+</div>
 
-    <div class="slider" id="furnitureSlider">
+<!-- ========================= -->
+<!-- SCENES GRID -->
+<!-- ========================= -->
 
-        <div class="slide">
-            <div class="act">
-                <iframe src="https://essabki.github.io/Three.js_wardrobe/"></iframe>
-            </div>
-            <div class="description">
-                <h1>Wardrobe </h1>
-                <p>3D furniture model two doors and two big drawers</p>
-            </div>
+<div class="grid-section" id="scenes">
+  <div class="section-label">Scenes</div>
+  <div class="grid" id="mainGrid">
+
+    <div class="card" data-category="scene" data-url="https://essabki.github.io/3D_Kitchen/" data-title="Kitchen" data-desc="Interactive 3D kitchen built with Three.js, featuring an oven, sink table, refrigerator, and cooking station." data-tags="Three.js,Kitchen">
+      <div class="card-thumb">
+        <iframe src="https://essabki.github.io/3D_Kitchen/" loading="lazy" tabindex="-1" title="Kitchen preview"></iframe>
+        <div class="card-tag">Scene</div>
+        <div class="card-overlay">
+          <button class="btn-view">
+            <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Full View
+          </button>
         </div>
-
-        <div class="slide">
-            <div class="act">
-                <iframe src="https://essabki.github.io/Three.js_wardrobe.II/"></iframe>
-            </div>
-            <div class="description">
-                <h1>Wardrobe 2</h1>
-                <p>3D furniture model three doors two small drawers</p>
-            </div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Kitchen</div>
+        <div class="card-desc">Interactive 3D kitchen — oven, sink table, refrigerator, cooking station.</div>
+        <div class="card-footer">
+          <div class="card-chips">
+            <span class="chip">Three.js</span>
+            <span class="chip">Kitchen</span>
+          </div>
+          <span class="card-link">Open →</span>
         </div>
-
-
-
-
-        <div class="slide">
-            <div class="act">
-                <iframe src="https://essabki.github.io/3D_fitted_wardrobe_three.js/"></iframe>
-            </div>
-            <div class="description">
-                <h1>fitted wardrobe</h1>
-                <p>3D furniture model ,wall-mounted wardrobe,with shoe cabinet</p>
-            </div>
-        </div>
-        <div class="slide">
-            <div class="act">
-                <iframe src="https://essabki.github.io/desk/"></iframe>
-            </div>
-            <div class="description">
-                <h1>Desk</h1>
-                <p>Interactive 3D desk , table with three drawers</p>
-            </div>
-        </div>
-
-            <div class="slide">
-            <div class="act">
-                <iframe src="https://essabki.github.io/nightsatnd/"></iframe>
-            </div>
-            <div class="description">
-                <h1>NightStand</h1>
-                <p>3D model with 2 drawer </p>
-            </div>
-        </div>
+      </div>
     </div>
 
-</section>
+    <div class="card" data-category="scene" data-url="https://essabki.github.io/3D_room/" data-title="Room" data-desc="Interactive 3D bedroom featuring a wardrobe, desk, nightstand, and a GLB bed model." data-tags="Three.js,Room">
+      <div class="card-thumb">
+        <iframe src="https://essabki.github.io/3D_room/" loading="lazy" tabindex="-1" title="Room preview"></iframe>
+        <div class="card-tag">Scene</div>
+        <div class="card-overlay">
+          <button class="btn-view">
+            <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Full View
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Room</div>
+        <div class="card-desc">Interactive 3D bedroom — wardrobe, desk, nightstand, GLB bed model.</div>
+        <div class="card-footer">
+          <div class="card-chips">
+            <span class="chip">Three.js</span>
+            <span class="chip">GLB</span>
+          </div>
+          <span class="card-link">Open →</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-category="scene" data-url="https://essabki.github.io/store/" data-title="Cola Store" data-desc="Interactive 3D cola store environment with product displays and atmosphere." data-tags="Three.js,Store">
+      <div class="card-thumb">
+        <iframe src="https://essabki.github.io/store/" loading="lazy" tabindex="-1" title="Store preview"></iframe>
+        <div class="card-tag">Scene</div>
+        <div class="card-overlay">
+          <button class="btn-view">
+            <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Full View
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Cola Store</div>
+        <div class="card-desc">Interactive 3D cola store with product displays and full atmosphere.</div>
+        <div class="card-footer">
+          <div class="card-chips">
+            <span class="chip">Three.js</span>
+            <span class="chip">Store</span>
+          </div>
+          <span class="card-link">Open →</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========================= -->
+<!-- FURNITURE GRID -->
+<!-- ========================= -->
+
+<div class="grid-section" id="furniture">
+  <div class="section-label">Furniture</div>
+  <div class="grid" id="furnitureGrid">
+
+    <div class="card" data-category="wardrobe furniture" data-url="https://essabki.github.io/Three.js_wardrobe/" data-title="Wardrobe I" data-desc="3D furniture model with two large doors and two spacious drawers." data-tags="Three.js,Wardrobe">
+      <div class="card-thumb">
+        <iframe src="https://essabki.github.io/Three.js_wardrobe/" loading="lazy" tabindex="-1" title="Wardrobe preview"></iframe>
+        <div class="card-tag">Furniture</div>
+        <div class="card-overlay">
+          <button class="btn-view">
+            <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Full View
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Wardrobe I</div>
+        <div class="card-desc">Two large doors and two spacious drawers.</div>
+        <div class="card-footer">
+          <div class="card-chips">
+            <span class="chip">Wardrobe</span>
+          </div>
+          <span class="card-link">Open →</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-category="wardrobe furniture" data-url="https://essabki.github.io/Three.js_wardrobe.II/" data-title="Wardrobe II" data-desc="3D furniture model with three doors and two small drawers." data-tags="Three.js,Wardrobe">
+      <div class="card-thumb">
+        <iframe src="https://essabki.github.io/Three.js_wardrobe.II/" loading="lazy" tabindex="-1" title="Wardrobe 2 preview"></iframe>
+        <div class="card-tag">Furniture</div>
+        <div class="card-overlay">
+          <button class="btn-view">
+            <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Full View
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Wardrobe II</div>
+        <div class="card-desc">Three doors and two small drawers.</div>
+        <div class="card-footer">
+          <div class="card-chips">
+            <span class="chip">Wardrobe</span>
+          </div>
+          <span class="card-link">Open →</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-category="wardrobe furniture" data-url="https://essabki.github.io/3D_fitted_wardrobe_three.js/" data-title="Fitted Wardrobe" data-desc="Wall-mounted fitted wardrobe with an integrated shoe cabinet." data-tags="Three.js,Fitted">
+      <div class="card-thumb">
+        <iframe src="https://essabki.github.io/3D_fitted_wardrobe_three.js/" loading="lazy" tabindex="-1" title="Fitted wardrobe preview"></iframe>
+        <div class="card-tag">Furniture</div>
+        <div class="card-overlay">
+          <button class="btn-view">
+            <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Full View
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Fitted Wardrobe</div>
+        <div class="card-desc">Wall-mounted wardrobe with integrated shoe cabinet.</div>
+        <div class="card-footer">
+          <div class="card-chips">
+            <span class="chip">Fitted</span>
+          </div>
+          <span class="card-link">Open →</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-category="furniture" data-url="https://essabki.github.io/desk/" data-title="Desk" data-desc="Interactive 3D desk — table surface with three organized drawers." data-tags="Three.js,Desk">
+      <div class="card-thumb">
+        <iframe src="https://essabki.github.io/desk/" loading="lazy" tabindex="-1" title="Desk preview"></iframe>
+        <div class="card-tag">Furniture</div>
+        <div class="card-overlay">
+          <button class="btn-view">
+            <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Full View
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Desk</div>
+        <div class="card-desc">Table surface with three organized drawers.</div>
+        <div class="card-footer">
+          <div class="card-chips">
+            <span class="chip">Desk</span>
+          </div>
+          <span class="card-link">Open →</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-category="furniture" data-url="https://essabki.github.io/nightsatnd/" data-title="Nightstand" data-desc="Compact 3D nightstand model with two drawers." data-tags="Three.js,Nightstand">
+      <div class="card-thumb">
+        <iframe src="https://essabki.github.io/nightsatnd/" loading="lazy" tabindex="-1" title="Nightstand preview"></iframe>
+        <div class="card-tag">Furniture</div>
+        <div class="card-overlay">
+          <button class="btn-view">
+            <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Full View
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Nightstand</div>
+        <div class="card-desc">Compact nightstand with two drawers.</div>
+        <div class="card-footer">
+          <div class="card-chips">
+            <span class="chip">Nightstand</span>
+          </div>
+          <span class="card-link">Open →</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========================= -->
+<!-- FOOTER -->
+<!-- ========================= -->
+
+<footer>
+  <span class="logo">SHOWROOM 3D</span>
+  <p>Built with Three.js · Interactive 3D Furniture & Scene Design</p>
+</footer>
+
+<!-- ========================= -->
+<!-- LIGHTBOX -->
+<!-- ========================= -->
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="3D Viewer">
+  <button class="lb-close" id="lbClose" aria-label="Close">✕</button>
+  <div class="lb-inner">
+    <div class="lb-frame">
+      <iframe id="lbIframe" src="" title="3D Viewer" allowfullscreen></iframe>
+    </div>
+    <div class="lb-info">
+      <div class="lb-tag" id="lbTag">Scene</div>
+      <div class="lb-title" id="lbTitle">Title</div>
+      <div class="lb-desc" id="lbDesc">Description</div>
+      <div class="lb-chips" id="lbChips"></div>
+      <a id="lbLink" href="#" target="_blank" rel="noopener">
+        <button class="lb-open-btn">↗ Open in New Tab</button>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ========================= -->
+<!-- SCRIPT -->
+<!-- ========================= -->
 
 <script>
 
-/* =========================
-   UNIVERSAL SLIDER ENGINE
-========================= */
+/* ---------- Lightbox ---------- */
 
-const state = {};
+const lightbox = document.getElementById('lightbox');
+const lbIframe = document.getElementById('lbIframe');
+const lbTitle  = document.getElementById('lbTitle');
+const lbDesc   = document.getElementById('lbDesc');
+const lbTag    = document.getElementById('lbTag');
+const lbChips  = document.getElementById('lbChips');
+const lbLink   = document.getElementById('lbLink');
 
-function move(sliderId, dir){
-    const slider = document.getElementById(sliderId);
-    const total = slider.children.length;
+function openLightbox(card) {
+  const url   = card.dataset.url;
+  const title = card.dataset.title;
+  const desc  = card.dataset.desc;
+  const cat   = card.dataset.category.split(' ')[0];
+  const tags  = card.dataset.tags.split(',');
 
-    if(state[sliderId] === undefined){
-        state[sliderId] = 0;
-    }
+  lbIframe.src = url;
+  lbTitle.textContent = title;
+  lbDesc.textContent  = desc;
+  lbTag.textContent   = cat.charAt(0).toUpperCase() + cat.slice(1);
+  lbLink.href = url;
 
-    state[sliderId] += dir;
+  lbChips.innerHTML = tags.map(t =>
+    `<span class="chip">${t.trim()}</span>`
+  ).join('');
 
-    if(state[sliderId] < 0){
-        state[sliderId] = 0;
-    }
-
-    if(state[sliderId] > total - 1){
-        state[sliderId] = total - 1;
-    }
-
-    slider.style.transform =
-        `translateX(-${state[sliderId] * 100}%)`;
+  lightbox.classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
 
-</script>
+function closeLightbox() {
+  lightbox.classList.remove('open');
+  document.body.style.overflow = '';
+  setTimeout(() => { lbIframe.src = ''; }, 350);
+}
 
+document.getElementById('lbClose').addEventListener('click', closeLightbox);
+
+lightbox.addEventListener('click', e => {
+  if (e.target === lightbox) closeLightbox();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightbox();
+});
+
+/* ---------- Cards ---------- */
+
+document.querySelectorAll('.card').forEach(card => {
+  card.addEventListener('click', () => openLightbox(card));
+});
+
+/* ---------- Filters ---------- */
+
+const filterBtns = document.querySelectorAll('.filter-btn');
+const allCards   = document.querySelectorAll('.card');
+
+filterBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    filterBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const filter = btn.dataset.filter;
+
+    allCards.forEach((card, i) => {
+      const cats = card.dataset.category;
+      const show = filter === 'all' || cats.includes(filter);
+
+      if (show) {
+        card.classList.remove('hidden');
+        card.style.animationDelay = (i * 0.05) + 's';
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+  });
+});
+
+/* ---------- Mobile Nav ---------- */
+
+const hamburgerBtn = document.getElementById('hamburgerBtn');
+const navDrawer    = document.getElementById('navDrawer');
+
+hamburgerBtn.addEventListener('click', () => {
+  navDrawer.classList.toggle('open');
+});
+
+navDrawer.addEventListener('click', e => {
+  if (e.target === navDrawer) closeDrawer();
+});
+
+function closeDrawer() {
+  navDrawer.classList.remove('open');
+}
+
+/* ---------- Active Nav on scroll ---------- */
+
+const navLinks = document.querySelectorAll('#desktopNav a');
+const sections = ['hero','scenes','furniture'].map(id => document.getElementById(id));
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`#desktopNav a[href="#${entry.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { threshold: 0.3 });
+
+sections.forEach(s => s && observer.observe(s));
+
+</script>
 </body>
 </html>
